@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="ערב של שלוש שעות על יאכטה ממרינה הרצליה: מעגל אבות מונחה מול השקיעה, חברה טובה, וחזרה הביתה עם ראש אחר.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="אבא מפליג">
+<meta property="og:description" content="שלוש שעות. ים. אבות. שיחה אמיתית. מלאו שאלון קצר וקבלו עדיפות בהפלגה הראשונה.">
+<meta property="og:image" content="og-image.jpg">
+<meta property="og:locale" content="he_IL">
+<meta name="theme-color" content="#0E1116">
+<link rel="preload" as="image" href="frames/desktop/frame_0001.webp" media="(min-aspect-ratio: 20/21)">
+<link rel="preload" as="image" href="frames/mobile/frame_0001.webp" media="(max-aspect-ratio: 20/21)">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<script src="config.js"></script>
+<title>אבא מפליג</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: pinned full-bleed canvas scrubbed by scroll (dark, cinematic, over the footage), then the brand's light "paper" sections: evening schedule and a four-step survey. Brand palette from the Banani style sheet: blue primary, yellow highlight, green success, ink and paper. Deliberately fixed look (not theme-switched): dark hero, light body. */
+:root{
+  --blue:#347DDB;       /* primary: buttons, links, selected states */
+  --blue-dk:#2E5A96;    /* secondary elements, times in the schedule */
+  --green:#2E973E;      /* success */
+  --yellow:#FAE73F;     /* highlight: hero accents, progress, markers */
+  --ink:#0E1116;        /* headings, body text, hero ground */
+  --paper:#F7F7FF;      /* light section ground */
+  --white:#FFFFFF;
+  --muted:#6b7280;      /* secondary text on paper */
+  --border:#e5e7eb;
+  --danger:#dc2626;
+  --on-dark:#F7F7FF;    /* text over the footage */
+  --on-dark-2:rgba(247,247,255,.72);
+  --shade:rgba(14,17,22,.66);
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:24px;
+  --font:"Heebo",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{background:var(--paper);color:var(--ink)}
+body{font-family:var(--font);font-size:17px;line-height:1.6;direction:rtl}
+
+/* ---------- Hero (dark, over footage) ---------- */
+.track{position:relative;height:520vh;background:var(--ink);color:var(--on-dark)}
+.stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.stage::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to top,var(--shade) 0%,transparent 48%),linear-gradient(to left,rgba(14,17,22,.5),transparent 58%)}
+.caps{position:absolute;inset-inline:clamp(16px,6vw,88px);bottom:clamp(40px,11vh,120px);z-index:2;max-width:680px}
+.cap{position:absolute;bottom:0;inset-inline-start:0;opacity:0;transform:translateY(14px);transition:opacity .45s ease,transform .45s ease}
+.cap.on{opacity:1;transform:none}
+.cap:first-child{position:relative}
+.time{display:inline-flex;align-items:center;gap:.5em;font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:.04em;color:var(--ink);background:var(--yellow);padding:3px 10px;border-radius:var(--r-sm)}
+.cap h2{font-weight:900;font-size:clamp(2.6rem,10vw,5.6rem);letter-spacing:-0.02em;line-height:1;margin:.28em 0 .22em;text-wrap:balance;color:var(--on-dark)}
+.cap h2 mark{background:none;color:var(--yellow)}
+.cap p{margin:0;color:var(--on-dark-2);font-size:clamp(17px,2vw,21px);max-width:36ch}
+.cta{display:inline-flex;align-items:center;gap:.6em;margin-top:24px;padding:14px 26px;border-radius:var(--r-md);background:var(--blue);color:var(--white);font-weight:700;font-size:18px;text-decoration:none;border:0;cursor:pointer;font-family:var(--font);transition:background .2s}
+.cta:hover{background:var(--blue-dk)}
+.cta:focus-visible{outline:3px solid var(--yellow);outline-offset:3px}
+.cta:disabled{opacity:.7;cursor:progress}
+.rail{position:absolute;inset-inline-end:clamp(12px,3vw,40px);top:50%;transform:translateY(-50%);z-index:2;font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--on-dark-2)}
+.rail ol{margin:0;padding:0;display:grid;gap:18px}
+.rail li{list-style:none;display:flex;gap:10px;align-items:center;transition:color .3s}
+.rail li::after{content:"";width:8px;height:8px;border-radius:50%;border:1.5px solid currentColor}
+.rail li.on{color:var(--on-dark)}
+.rail li.on::after{background:var(--yellow);border-color:var(--yellow)}
+.bar{position:absolute;top:0;inset-inline:0;height:3px;background:rgba(247,247,255,.15);z-index:3}
+.bar i{display:block;height:100%;width:0;background:var(--yellow)}
+.track.auto{height:auto}
+.track.auto .stage{position:relative;height:auto;aspect-ratio:16/9;max-height:none}
+.track.auto.portrait .stage{aspect-ratio:9/13}
+.track.auto .hint,.track.auto .bar{display:none}
+.hint{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);z-index:2;font-size:13px;font-weight:500;color:var(--on-dark-2);transition:opacity .4s}
+.load{position:absolute;top:14px;inset-inline-start:16px;z-index:3;font-family:var(--mono);font-size:11px;color:var(--on-dark-2)}
+
+/* ---------- Evening schedule (paper) ---------- */
+.after{padding-block:clamp(64px,12vh,128px);padding-inline:clamp(16px,6vw,88px);background:var(--paper)}
+.after .wrap{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(28px,5vw,72px);align-items:start}
+.after h3{font-weight:900;font-size:clamp(2.4rem,6vw,4.4rem);letter-spacing:-0.02em;line-height:1;margin:0;text-wrap:balance}
+.after h3 mark{background:linear-gradient(transparent 58%,var(--yellow) 58%);color:inherit;padding-inline:.05em}
+.after dl{margin:0;display:grid;gap:10px}
+.after dl div{display:grid;grid-template-columns:5.5em 1fr;gap:14px;align-items:baseline;padding:14px 18px;background:var(--white);border:1px solid var(--border);border-radius:var(--r-md)}
+.after dt{font-family:var(--mono);font-weight:500;font-size:14px;color:var(--blue-dk)}
+.after dd{margin:0;min-width:0;font-weight:500}
+.coords{margin-top:22px;display:inline-block;font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.02em}
+
+/* ---------- About (paper, before the survey) ---------- */
+.about{padding-block:0 clamp(48px,9vh,96px);padding-inline:clamp(16px,6vw,88px);background:var(--paper)}
+.about .wrap{max-width:1080px;margin:0 auto;display:grid;gap:28px}
+.about .intro{max-width:62ch;display:grid;gap:10px}
+.about h3{font-weight:900;font-size:clamp(2rem,5vw,3.2rem);letter-spacing:-0.02em;line-height:1.05;margin:0;text-wrap:balance}
+.about .intro p{margin:0;font-size:clamp(17px,1.8vw,19px)}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.fact{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px 22px;display:grid;gap:6px;align-content:start;min-width:0}
+.fact .k{font-size:13px;font-weight:700;color:var(--blue-dk)}
+.fact .v{font-weight:700;font-size:18px;line-height:1.3}
+.fact p{margin:0;color:var(--muted);font-size:15.5px}
+@media (max-width:760px){.facts{grid-template-columns:1fr}}
+
+/* ---------- Survey (white card on paper) ---------- */
+.survey{padding-block:0 clamp(64px,12vh,128px);padding-inline:clamp(16px,6vw,88px);background:var(--paper)}
+.survey .wrap{max-width:820px;margin:0 auto;background:var(--white);border:1px solid var(--border);border-radius:var(--r-xl);padding:clamp(24px,5vw,56px)}
+.eyebrow{font-size:14px;font-weight:700;color:var(--blue)}
+.survey h3{font-weight:900;font-size:clamp(2rem,5.5vw,3.4rem);letter-spacing:-0.02em;line-height:1.05;margin:.2em 0 .35em;text-wrap:balance}
+.lede{color:var(--muted);margin:0 0 32px;max-width:54ch}
+.legs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0 0 32px;padding:0;list-style:none}
+.legs li{font-size:13px;font-weight:500;color:var(--muted);padding-top:10px;border-top:4px solid var(--border);border-radius:2px;transition:color .3s,border-color .3s;min-width:0}
+.legs li b{font-family:var(--mono);font-weight:500;margin-inline-end:4px}
+.legs li.done{border-color:var(--blue)}
+.legs li.now{border-color:var(--yellow);color:var(--ink);font-weight:700}
+fieldset{border:0;margin:0;padding:0;display:grid;gap:30px;min-width:0}
+fieldset legend{font-weight:900;font-size:clamp(1.6rem,3.6vw,2.1rem);letter-spacing:-0.01em;line-height:1.1;margin-bottom:6px;padding:0}
+.q{display:grid;gap:12px;min-width:0}
+.q>label,.q>.qt{font-weight:700;font-size:18px;line-height:1.35}
+.q .sub{font-weight:400;color:var(--muted);font-size:15px}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{position:relative}
+.opt input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.opt span{display:inline-block;padding:9px 16px;border:1.5px solid var(--border);border-radius:var(--r-md);font-size:15.5px;font-weight:500;color:var(--ink);background:var(--paper);transition:background .15s,border-color .15s,color .15s;cursor:pointer}
+.opt:hover span{border-color:var(--blue)}
+.opt input:checked+span{background:var(--blue);border-color:var(--blue);color:var(--white)}
+.opt input:focus-visible+span{outline:3px solid var(--yellow);outline-offset:2px}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;max-width:420px}
+.scale .opt span{display:block;text-align:center;font-family:var(--mono);font-weight:500;padding:12px 0}
+.scale-ends{display:flex;justify-content:space-between;max-width:420px;font-size:13px;color:var(--muted)}
+.reveal{display:grid;gap:8px;max-width:440px}
+.reveal>label,.reveal .sub-label{font-size:15px;color:var(--muted);font-weight:500}
+.age-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px;max-width:560px}
+.age-grid>div{display:grid;gap:4px;min-width:0}
+.age-grid label{font-size:13px;color:var(--muted)}
+select{width:100%;background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-md);padding:11px 12px;color:var(--ink);font:inherit;font-size:16px;cursor:pointer}
+select:focus-visible{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(52,125,219,.2)}
+input[type=text],input[type=tel],textarea{width:100%;background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-md);padding:12px 14px;color:var(--ink);font:inherit;font-size:16px}
+input::placeholder{color:#9ca3af}
+input:focus-visible,textarea:focus-visible{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(52,125,219,.2)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pair>div{min-width:0;display:grid;gap:8px;align-content:start}
+.pair label{font-size:15px;color:var(--muted)}
+.optin{border:1.5px solid var(--yellow);border-radius:var(--r-lg);padding:22px;display:grid;gap:16px;background:rgba(250,231,63,.16)}
+.optin .head{display:flex;gap:12px;align-items:flex-start}
+.optin .head input{width:20px;height:20px;accent-color:var(--blue);margin-top:4px;flex:none}
+.optin .head label{font-weight:700;font-size:18px}
+.optin .head p{margin:2px 0 0;color:var(--muted);font-size:15px}
+.optin .pair label{color:var(--ink)}
+.nav{display:flex;gap:12px;align-items:center;margin-top:34px;flex-wrap:wrap}
+.nav .cta{margin-top:0}
+.ghost{background:var(--white);border:1.5px solid var(--border);color:var(--ink);padding:13px 22px;border-radius:var(--r-md);font:inherit;font-size:16px;font-weight:500;cursor:pointer}
+.ghost:hover{border-color:var(--ink)}
+.ghost:focus-visible{outline:3px solid var(--yellow);outline-offset:3px}
+.nav .count{margin-inline-start:auto;font-family:var(--mono);font-size:12px;color:var(--muted)}
+.err{color:var(--danger);font-size:15px;font-weight:500;margin:18px 0 0}
+.done-card{display:grid;gap:12px;justify-items:start}
+.done-card .eyebrow{color:var(--green)}
+.done-card .tick{width:56px;height:56px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+.done-card h4{font-weight:900;font-size:clamp(2.2rem,5vw,3.2rem);letter-spacing:-0.02em;margin:0;line-height:1}
+.done-card p{margin:0;color:var(--muted);max-width:48ch}
+@media (max-width:760px){.after .wrap{grid-template-columns:1fr}.rail{display:none}}
+@media (max-width:560px){.pair{grid-template-columns:1fr}.legs li{font-size:11px}.legs li span{display:none}}
+@media (prefers-reduced-motion:reduce){.cap,.opt span,.cta{transition:none}}
+</style>
+</head>
+<body>
+
+
+
+<section class="track" id="track" aria-label="מהשגרה אל הים">
+  <div class="stage">
+    <canvas id="seq" aria-hidden="true"></canvas>
+    <div class="bar"><i id="bar"></i></div>
+    <div class="load" id="load">טוען פריימים 0/185</div>
+
+    <div class="caps">
+      <div class="cap on" data-from="0" data-to="0.28">
+        <div class="time">07:12 · יום שלישי</div>
+        <h2>עוד בוקר רגיל.</h2>
+        <p>קופסת אוכל, טלפון מהעבודה, שני ילדים שמושכים בחולצה.</p>
+      </div>
+      <div class="cap" data-from="0.28" data-to="0.54">
+        <div class="time">17:20 · המשרד</div>
+        <h2>סוגרים את המחשב.</h2>
+        <p>ובפעם הראשונה השבוע, הערב לא שייך לאף אחד אחר.</p>
+      </div>
+      <div class="cap" data-from="0.54" data-to="0.78">
+        <div class="time">18:00 · מרינה הרצליה</div>
+        <h2>הערב הזה <mark>שלך.</mark></h2>
+        <p>שלוש שעות על יאכטה, מול השקיעה. בלי מסכים ובלי לו״ז.</p>
+      </div>
+      <div class="cap" data-from="0.78" data-to="1.01">
+        <div class="time">19:10 · על הסיפון</div>
+        <h2>אבא <mark>מפליג.</mark></h2>
+        <p>מעגל אבות מונחה על הסיפון, חברה טובה, וחזרה הביתה עם ראש אחר.</p>
+        <a class="cta" href="#survey">אני רוצה לעלות לסיפון <span>←</span></a>
+      </div>
+    </div>
+
+    <nav class="rail" aria-label="ציר הערב">
+      <ol>
+        <li data-i="0">07:12 בית</li>
+        <li data-i="1">17:20 עבודה</li>
+        <li data-i="2">18:00 ים</li>
+        <li data-i="3">19:10 מעגל</li>
+      </ol>
+    </nav>
+    <div class="hint" id="hint">גללו למטה</div>
+  </div>
+</section>
+
+<section class="after" id="join">
+  <div class="wrap">
+    <div>
+      <h3>שלוש שעות.<br>ים. אבות.<br><mark>שיחה אמיתית.</mark></h3>
+      <div class="coords">32°09′40″N · 34°47′50″E · יציאה ממרינה הרצליה</div>
+    </div>
+    <dl>
+      <div><dt>18:00</dt><dd>התכנסות על המזח, קפה והיכרות קצרה</dd></div>
+      <div><dt>18:20</dt><dd>יוצאים להפליג. כל אחד מקבל תפקיד קטן על הסיפון</dd></div>
+      <div><dt>19:00</dt><dd>הפלגה ומעגל שיחה מונחה עם איש מקצוע</dd></div>
+      <div><dt>20:00</dt><dd>ארוחה משותפת בקוקפיט</dd></div>
+      <div><dt>21:00</dt><dd>חוזרים למזח</dd></div>
+    </dl>
+  </div>
+</section>
+
+<section class="about" id="about" aria-labelledby="about-title">
+  <div class="wrap">
+    <div class="intro">
+      <div class="eyebrow">מה זה אבא מפליג</div>
+      <h3 id="about-title">ערב אחד שבו אבות עוצרים, יוצאים לים ומדברים באמת.</h3>
+      <p>קבוצה קטנה של אבות יוצאת לשלוש שעות על יאכטה ממרינה הרצליה. בהפלגה, מול השקיעה, איש מקצוע מנחה מעגל שיחה על מה שקורה לנו מאחורי הקלעים: הסבלנות, הזוגיות, והאבא שאנחנו רוצים להיות. זה לא סדנה ולא הרצאה, פשוט ערב שבו מותר לא להיות בתפקיד.</p>
+    </div>
+    <div class="facts">
+      <div class="fact">
+        <span class="k">למי</span>
+        <span class="v">אבות לילדים בכל גיל</span>
+        <p>אין צורך בניסיון בשייט. מגיעים כמו שאתם, ועד 10 אבות בכל הפלגה.</p>
+      </div>
+      <div class="fact">
+        <span class="k">מי מוביל</span>
+        <span class="v">רנן ליפשיץ</span>
+        <p>מדריך שייט ומנחה הפודקאסט "אבא מתבגר". אני משיט את הסירה, ולצדי מנחה מקצועי למעגל.</p>
+      </div>
+      <div class="fact">
+        <span class="k">מה כלול</span>
+        <span class="v">ים, מעגל וארוחה</span>
+        <p>הפלגה של שלוש שעות, מעגל שיחה מונחה, ארוחה משותפת על הסיפון וציוד בטיחות.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="survey" id="survey" aria-labelledby="survey-title">
+  <div class="wrap">
+    <div class="eyebrow">לפני ההפלגה הראשונה</div>
+    <h3 id="survey-title">כמה שאלות, ואני יודע איך לבנות את הערב.</h3>
+    <p class="lede">אני עדיין מתכנן את "אבא מפליג", ורוצה לשמוע מאבות אמיתיים מה חסר להם. מי שמשאיר פרטים בסוף מקבל עדיפות בהפלגה הראשונה.</p>
+
+    <ol class="legs" id="legs" aria-label="שלבי השאלון">
+      <li class="now"><b>01</b><span>מי אתה</span></li>
+      <li><b>02</b><span>הצורך</span></li>
+      <li><b>03</b><span>הערב</span></li>
+      <li><b>04</b><span>הרשמה</span></li>
+    </ol>
+
+    <form id="form" novalidate>
+      <fieldset data-leg="0">
+        <legend>מי אתה</legend>
+        <div class="q">
+          <div class="qt" id="q-age">בן כמה אתה?</div>
+          <div class="opts" role="radiogroup" aria-labelledby="q-age">
+            <label class="opt"><input type="radio" name="age" id="age-1" value="עד 30"><span>עד 30</span></label>
+            <label class="opt"><input type="radio" name="age" id="age-2" value="31-40"><span>31–40</span></label>
+            <label class="opt"><input type="radio" name="age" id="age-3" value="41-50"><span>41–50</span></label>
+            <label class="opt"><input type="radio" name="age" id="age-4" value="50+"><span>50+</span></label>
+          </div>
+        </div>
+        <div class="q">
+          <div class="qt" id="q-kids">כמה ילדים יש לך?</div>
+          <div class="opts" role="radiogroup" aria-labelledby="q-kids">
+            <label class="opt"><input type="radio" name="kids" id="kids-1" value="1"><span>1</span></label>
+            <label class="opt"><input type="radio" name="kids" id="kids-2" value="2"><span>2</span></label>
+            <label class="opt"><input type="radio" name="kids" id="kids-3" value="3"><span>3</span></label>
+            <label class="opt"><input type="radio" name="kids" id="kids-4" value="4"><span>4</span></label>
+            <label class="opt"><input type="radio" name="kids" id="kids-5" value="5"><span>5</span></label>
+            <label class="opt"><input type="radio" name="kids" id="kids-6" value="6"><span>6+</span></label>
+          </div>
+          <div class="reveal" id="ages" hidden>
+            <div class="sub-label">בני כמה הם?</div>
+            <div class="age-grid" id="age-grid"></div>
+          </div>
+        </div>
+        <div class="q">
+          <div class="qt" id="q-area">איפה אתה גר?</div>
+          <div class="opts" role="radiogroup" aria-labelledby="q-area">
+            <label class="opt"><input type="radio" name="area" id="area-1" value="תל אביב"><span>תל אביב</span></label>
+            <label class="opt"><input type="radio" name="area" id="area-2" value="השרון"><span>השרון</span></label>
+            <label class="opt"><input type="radio" name="area" id="area-3" value="גוש דן"><span>גוש דן</span></label>
+            <label class="opt"><input type="radio" name="area" id="area-4" value="אחר"><span>אחר</span></label>
+          </div>
+          <div class="reveal" id="city-wrap" hidden>
+            <label for="city">באיזו עיר או יישוב? <span class="sub">אפשר להקליד או לבחור מהרשימה</span></label>
+            <input type="text" id="city" name="city" list="cities" maxlength="60" autocomplete="address-level2">
+            <datalist id="cities">
+              <option value="הרצליה"><option value="רעננה"><option value="כפר סבא"><option value="הוד השרון"><option value="רמת השרון"><option value="נתניה"><option value="כפר יונה"><option value="אבן יהודה"><option value="תל מונד"><option value="קדימה צורן"><option value="כוכב יאיר צור יגאל">
+              <option value="רמת גן"><option value="גבעתיים"><option value="בני ברק"><option value="חולון"><option value="בת ים"><option value="פתח תקווה"><option value="ראשון לציון"><option value="קריית אונו"><option value="גבעת שמואל"><option value="אור יהודה"><option value="יהוד מונוסון"><option value="ראש העין"><option value="שוהם"><option value="נס ציונה"><option value="רחובות"><option value="לוד"><option value="רמלה">
+              <option value="מודיעין"><option value="ירושלים"><option value="חיפה"><option value="חדרה"><option value="פרדס חנה כרכור"><option value="זכרון יעקב"><option value="אשדוד"><option value="אשקלון"><option value="באר שבע">
+            </datalist>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset data-leg="1" hidden>
+        <legend>הצורך</legend>
+        <div class="q">
+          <div class="qt" id="q-nights">כמה ערבים שהם רק שלך היו לך בשנה האחרונה? <span class="sub">בלי עבודה ובלי בית</span></div>
+          <div class="opts" role="radiogroup" aria-labelledby="q-nights">
+            <label class="opt"><input type="radio" name="nights" id="nights-1" value="אף פעם"><span>אף פעם</span></label>
+            <label class="opt"><input type="radio" name="nights" id="nights-2" value="1-2"><span>1–2</span></label>
+            <label class="opt"><input type="radio" name="nights" id="nights-3" value="3-6"><span>3–6</span></label>
+            <label class="opt"><input type="radio" name="nights" id="nights-4" value="יותר"><span>יותר</span></label>
+          </div>
+        </div>
+        <div class="q">
+          <div class="qt" id="q-talk">יש לך עם מי לדבר בגובה העיניים על אבהות?</div>
+          <div class="opts" role="radiogroup" aria-labelledby="q-talk">
+            <label class="opt"><input type="radio" name="talk" id="talk-1" value="כן, בקלות"><span>כן, בקלות</span></label>
+            <label class="opt"><input type="radio" name="talk" id="talk-2" value="לפעמים"><span>לפעמים</span></label>
+            <label class="opt"><input type="radio" name="talk" id="talk-3" value="לא ממש"><span>לא ממש</span></label>
+          </div>
+        </div>
+        <div class="q">
+          <div class="qt" id="q-fit">כמה "אבא מפליג" מדבר אליך? <span class="sub">(חובה)</span></div>
+          <div class="scale" role="radiogroup" aria-labelledby="q-fit">
+            <label class="opt"><input type="radio" name="fit" id="fit-1" value="1"><span>1</span></label>
+            <label class="opt"><input type="radio" name="fit" id="fit-2" value="2"><span>2</span></label>
+            <label class="opt"><input type="radio" name="fit" id="fit-3" value="3"><span>3</span></label>
+            <label class="opt"><input type="radio" name="fit" id="fit-4" value="4"><span>4</span></label>
+            <label class="opt"><input type="radio" name="fit" id="fit-5" value="5"><span>5</span></label>
+          </div>
+          <div class="scale-ends"><span>לא בשבילי</span><span>איפה נרשמים</span></div>
+        </div>
+      </fieldset>
+
+      <fieldset data-leg="2" hidden>
+        <legend>הערב</legend>
+        <div class="q">
+          <div class="qt" id="q-draw">מה הכי מושך אותך? <span class="sub">אפשר לבחור כמה</span></div>
+          <div class="opts" aria-labelledby="q-draw">
+            <label class="opt"><input type="checkbox" name="draw" id="draw-1" value="הים והשייט"><span>הים והשייט</span></label>
+            <label class="opt"><input type="checkbox" name="draw" id="draw-2" value="השיחה עם אבות"><span>השיחה עם אבות אחרים</span></label>
+            <label class="opt"><input type="checkbox" name="draw" id="draw-3" value="כלים מאיש מקצוע"><span>כלים מאיש מקצוע</span></label>
+            <label class="opt"><input type="checkbox" name="draw" id="draw-4" value="ערב חופשי"><span>ערב חופשי מהשגרה</span></label>
+            <label class="opt"><input type="checkbox" name="draw" id="draw-5" value="חברים חדשים"><span>להכיר חברים חדשים</span></label>
+            <label class="opt"><input type="checkbox" name="draw" id="draw-6" value="אחר"><span>אחר</span></label>
+          </div>
+          <div class="reveal" id="draw-other-wrap" hidden>
+            <label for="draw-other">מה עוד מושך אותך?</label>
+            <input type="text" id="draw-other" name="drawOther" maxlength="160">
+          </div>
+        </div>
+        <div class="q">
+          <div class="qt" id="q-topics">על מה היית רוצה לדבר? <span class="sub">אפשר לבחור כמה</span></div>
+          <div class="opts" aria-labelledby="q-topics">
+            <label class="opt"><input type="checkbox" name="topics" id="topics-1" value="כעס וסבלנות"><span>כעס וסבלנות</span></label>
+            <label class="opt"><input type="checkbox" name="topics" id="topics-2" value="זוגיות אחרי ילדים"><span>זוגיות אחרי ילדים</span></label>
+            <label class="opt"><input type="checkbox" name="topics" id="topics-3" value="האבא שלי מול האבא שאני"><span>האבא שלי מול האבא שאני</span></label>
+            <label class="opt"><input type="checkbox" name="topics" id="topics-4" value="איזון עבודה ובית"><span>איזון עבודה ובית</span></label>
+            <label class="opt"><input type="checkbox" name="topics" id="topics-5" value="מסכים וגבולות"><span>מסכים וגבולות</span></label>
+            <label class="opt"><input type="checkbox" name="topics" id="topics-6" value="אחר"><span>אחר</span></label>
+          </div>
+          <div class="reveal" id="topics-other-wrap" hidden>
+            <label for="topics-other">על מה עוד היית רוצה לדבר?</label>
+            <input type="text" id="topics-other" name="topicsOther" maxlength="160">
+          </div>
+        </div>
+        <div class="q">
+          <div class="qt" id="q-when">מתי הכי נוח לך?</div>
+          <div class="opts" role="radiogroup" aria-labelledby="q-when">
+            <label class="opt"><input type="radio" name="when" id="when-1" value="אמצע שבוע בערב"><span>אמצע שבוע בערב</span></label>
+            <label class="opt"><input type="radio" name="when" id="when-2" value="שישי אחה״צ"><span>שישי אחה״צ</span></label>
+            <label class="opt"><input type="radio" name="when" id="when-3" value="מוצ״ש"><span>מוצ״ש</span></label>
+            <label class="opt"><input type="radio" name="when" id="when-4" value="לא משנה"><span>לא משנה</span></label>
+          </div>
+        </div>
+        <div class="q">
+          <div class="qt" id="q-format">איזה פורמט היית מעדיף?</div>
+          <div class="opts" role="radiogroup" aria-labelledby="q-format">
+            <label class="opt"><input type="radio" name="format" id="format-1" value="חד-פעמי"><span>הפלגה חד-פעמית</span></label>
+            <label class="opt"><input type="radio" name="format" id="format-2" value="סדרה של 4"><span>סדרה של 4 עם אותה קבוצה</span></label>
+            <label class="opt"><input type="radio" name="format" id="format-3" value="פעם בחודש, פתוח"><span>פעם בחודש, מי שמגיע</span></label>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset data-leg="3" hidden>
+        <legend>כמעט סיימנו</legend>
+        <div class="q">
+          <div class="qt" id="q-block">מה עלול למנוע ממך להגיע? <span class="sub">אפשר לבחור כמה</span></div>
+          <div class="opts" aria-labelledby="q-block">
+            <label class="opt"><input type="checkbox" name="block" id="block-1" value="מחיר"><span>מחיר</span></label>
+            <label class="opt"><input type="checkbox" name="block" id="block-2" value="זמן"><span>זמן</span></label>
+            <label class="opt"><input type="checkbox" name="block" id="block-3" value="מחלת ים"><span>מחלת ים</span></label>
+            <label class="opt"><input type="checkbox" name="block" id="block-4" value="לדבר מול זרים"><span>לא נוח לי לדבר מול זרים</span></label>
+            <label class="opt"><input type="checkbox" name="block" id="block-5" value="בת הזוג"><span>בת הזוג</span></label>
+          </div>
+        </div>
+        <div class="optin">
+          <div class="head">
+            <input type="checkbox" id="optin" name="optin">
+            <div>
+              <label for="optin">שמרו לי מקום ברשימה המוקדמת</label>
+              <p>אקבל הודעה ראשון כשייפתחו מועדים. בלי התחייבות ובלי תשלום.</p>
+            </div>
+          </div>
+          <div class="pair" id="contact" hidden>
+            <div><label for="name">שם</label><input type="text" id="name" name="name" autocomplete="given-name" maxlength="60"></div>
+            <div><label for="phone">טלפון</label><input type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel" maxlength="20" placeholder="050-0000000" dir="ltr"></div>
+          </div>
+        </div>
+      </fieldset>
+
+      <p class="err" id="err" role="alert" hidden></p>
+      <div class="nav">
+        <button type="button" class="ghost" id="back" hidden>→ חזרה</button>
+        <button type="button" class="cta" id="next">המשך <span>←</span></button>
+        <button type="submit" class="cta" id="send" hidden>שליחה <span>←</span></button>
+        <span class="count" id="count">שלב 1 מתוך 4</span>
+      </div>
+    </form>
+
+    <div class="done-card" id="done" hidden tabindex="-1">
+      <div class="tick" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><div class="eyebrow">נרשם ביומן</div>
+      <h4>תודה, אחי.</h4>
+      <p id="done-text">התשובות שלך יעזרו לי לבנות את הערב הנכון.</p>
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+  const N=185;
+  const canvas=document.getElementById('seq');
+  const ctx=canvas.getContext('2d');
+  const track=document.getElementById('track');
+  const caps=[...document.querySelectorAll('.cap')];
+  const rail=[...document.querySelectorAll('.rail li')];
+  const bar=document.getElementById('bar');
+  const hint=document.getElementById('hint');
+  const load=document.getElementById('load');
+  const set=()=> (innerWidth<700 || (innerHeight>innerWidth*1.05 && innerHeight<(screen.height||900)*1.5))?'mobile':'desktop';
+  let kind=set(), imgs=[], loaded=0, cur=-1, want=0;
+
+  function src(i){return 'frames/'+kind+'/frame_'+String(i+1).padStart(4,'0')+'.webp'}
+  function preload(){
+    imgs=new Array(N); loaded=0;
+    const order=[0,N-1];
+    for(let s=64;s>=1;s=Math.floor(s/2)){for(let i=0;i<N;i+=s){if(!order.includes(i))order.push(i)}}
+    for(let i=0;i<N;i++){if(!order.includes(i))order.push(i)}
+    order.forEach(i=>{
+      const im=new Image(); im.decoding='async'; im.src=src(i);
+      im.onload=()=>{imgs[i]=im;loaded++;load.textContent='טוען פריימים '+loaded+'/'+N;
+        if(loaded===N)load.hidden=true;
+        if(i===want||cur<0)draw(want,true)};
+      im.onerror=()=>{loaded++; if(loaded===N)load.hidden=true};
+    });
+  }
+  function nearest(i){
+    if(imgs[i])return imgs[i];
+    for(let d=1;d<N;d++){if(imgs[i-d])return imgs[i-d];if(imgs[i+d])return imgs[i+d]}
+    return null;
+  }
+  function size(){
+    const dpr=Math.min(devicePixelRatio||1,2);
+    canvas.width=Math.round(canvas.clientWidth*dpr);
+    canvas.height=Math.round(canvas.clientHeight*dpr);
+    draw(want,true);
+  }
+  function draw(i,force){
+    const im=nearest(i); if(!im)return;
+    if(!force&&i===cur)return; cur=i;
+    const cw=canvas.width,ch=canvas.height,r=Math.max(cw/im.naturalWidth,ch/im.naturalHeight);
+    const w=im.naturalWidth*r,h=im.naturalHeight*r;
+    ctx.drawImage(im,(cw-w)/2,(ch-h)/2,w,h);
+  }
+  function progress(){
+    const r=track.getBoundingClientRect();
+    const total=track.offsetHeight-innerHeight;
+    return Math.min(1,Math.max(0,-r.top/total));
+  }
+  let ticking=false, auto=false, t0=0;
+  function update(){
+    ticking=false;
+    if(auto)return;
+    render(progress());
+  }
+  function render(p){
+    want=Math.min(N-1,Math.round(p*(N-1)));
+    draw(want);
+    bar.style.width=(p*100)+'%';
+    hint.style.opacity=p>0.02?0:1;
+    let active=0;
+    caps.forEach((c,k)=>{const on=p>=+c.dataset.from&&p<+c.dataset.to;c.classList.toggle('on',on);if(on)active=k});
+    rail.forEach((l,k)=>l.classList.toggle('on',k===active));
+  }
+  addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(update)}},{passive:true});
+  /* Some viewers (embedded previews, in-app frames) stretch the page to its full height,
+     so it never scrolls by itself. Then the hero plays as a looping clip instead. */
+  function stretched(){return innerHeight>Math.max(screen.height||0,900)*1.5}
+  function loop(ts){
+    if(!auto)return;
+    if(!t0)t0=ts;
+    const dur=9000, hold=1400, t=(ts-t0)%(dur+hold);
+    render(Math.min(1,t/dur));
+    requestAnimationFrame(loop);
+  }
+  function checkMode(){
+    const should=stretched();
+    if(should===auto)return;
+    auto=should;
+    track.classList.toggle('auto',auto);
+    track.classList.toggle('portrait',auto&&innerWidth<700);
+    if(auto){t0=0;requestAnimationFrame(loop)}else update();
+  }
+  if('ResizeObserver' in window) new ResizeObserver(()=>{size();checkMode()}).observe(canvas);
+  addEventListener('resize',()=>{const k=set();if(k!==kind){kind=k;preload()}size();update()});
+  checkMode(); size(); preload(); update();
+})();
+</script>
+
+<script>
+/* ---- Survey ------------------------------------------------------------
+   Answers go to Supabase (table "responses") through its REST API.
+   URL and public anon key live in config.js. The table's security rules
+   let visitors INSERT only, never read, so phone numbers stay private. */
+async function submitResponse(d){
+  const cfg=window.ABA_CONFIG||{};
+  if(!cfg.supabaseUrl||!cfg.supabaseAnonKey||cfg.supabaseUrl.includes('YOUR-')) throw {code:'not_configured'};
+  const row={
+    age:d.age||null, kids_count:d.kidsCount, kids_ages:d.kidsAges, area:d.area||null, city:d.city||null,
+    nights:d.nights||null, talk:d.talk||null, fit:d.fit,
+    draw:d.draw, draw_other:d.drawOther||null, topics:d.topics, topics_other:d.topicsOther||null,
+    pref_when:d.when||null, format:d.format||null, block:d.block,
+    optin:d.optin, name:d.name||null, phone:d.phone||null,
+    source:d.source, utm:d.utm||null, user_agent:navigator.userAgent.slice(0,300)
+  };
+  let res;
+  try{
+    res=await fetch(cfg.supabaseUrl.replace(/\/$/,'')+'/rest/v1/responses',{
+      method:'POST',
+      headers:Object.assign({'Content-Type':'application/json',apikey:cfg.supabaseAnonKey,Prefer:'return=minimal'},
+        cfg.supabaseAnonKey.startsWith('eyJ')?{Authorization:'Bearer '+cfg.supabaseAnonKey}:{}),
+      body:JSON.stringify(row)
+    });
+  }catch(e){throw {code:'network'}}
+  if(!res.ok){console.error('Supabase',res.status,await res.text().catch(()=>''));throw {code:'server'}}
+}
+
+(function(){
+  const form=document.getElementById('form');
+  const legs=[...form.querySelectorAll('fieldset')];
+  const marks=[...document.querySelectorAll('#legs li')];
+  const back=document.getElementById('back'), next=document.getElementById('next'), send=document.getElementById('send');
+  const err=document.getElementById('err'), count=document.getElementById('count');
+  const optin=document.getElementById('optin'), contact=document.getElementById('contact');
+  const done=document.getElementById('done'), doneText=document.getElementById('done-text');
+  let step=0, busy=false;
+
+  function show(i){
+    step=i;
+    legs.forEach((f,k)=>f.hidden=k!==i);
+    marks.forEach((m,k)=>{m.classList.toggle('now',k===i);m.classList.toggle('done',k<i)});
+    back.hidden=i===0; next.hidden=i===legs.length-1; send.hidden=i!==legs.length-1;
+    count.textContent='שלב '+(i+1)+' מתוך '+legs.length;
+    err.hidden=true;
+  }
+  function fail(msg,el){err.textContent=msg;err.hidden=false;if(el)el.focus()}
+  function val(n){const el=form.querySelector('[name="'+n+'"]:checked');return el?el.value:''}
+  function vals(n){return [...form.querySelectorAll('[name="'+n+'"]:checked')].map(e=>e.value)}
+  function phoneOk(p){return /^0\d{1,2}-?\d{7}$/.test(p.replace(/\s/g,''))}
+
+  function check(i){
+    if(i===1&&!val('fit')){fail('נשאר רק לדרג מ-1 עד 5 כמה זה מדבר אליך.',document.getElementById('fit-1'));return false}
+    if(i===3){
+      if(optin.checked){
+        const n=document.getElementById('name'),p=document.getElementById('phone');
+        if(!n.value.trim()){fail('כדי לשמור לך מקום, צריך שם.',n);return false}
+        if(!phoneOk(p.value)){fail('מספר הטלפון לא נראה תקין. נסה בפורמט 050-1234567.',p);return false}
+      }
+    }
+    return true;
+  }
+
+  next.addEventListener('click',()=>{if(check(step)){show(step+1);document.getElementById('survey').scrollIntoView({behavior:'smooth',block:'start'})}});
+  back.addEventListener('click',()=>show(step-1));
+  optin.addEventListener('change',()=>{contact.hidden=!optin.checked;if(optin.checked)document.getElementById('name').focus()});
+
+  /* kids count -> one age picker per child */
+  const ages=document.getElementById('ages'), grid=document.getElementById('age-grid');
+  function ageOptions(){let o='<option value="">בחר</option><option value="0">פחות משנה</option>';for(let a=1;a<=17;a++)o+='<option value="'+a+'">'+a+'</option>';return o+'<option value="18">18+</option>'}
+  function renderAges(n){
+    const prev=[...grid.querySelectorAll('select')].map(s=>s.value);
+    grid.innerHTML='';
+    for(let k=0;k<n;k++){
+      const d=document.createElement('div');
+      const l=document.createElement('label');l.htmlFor='age-kid-'+(k+1);l.textContent=n===1?'הילד/ה':'ילד/ה '+(k+1);
+      const s=document.createElement('select');s.id='age-kid-'+(k+1);s.innerHTML=ageOptions();if(prev[k])s.value=prev[k];
+      d.append(l,s);grid.append(d);
+    }
+    ages.hidden=n===0;
+  }
+  form.querySelectorAll('[name="kids"]').forEach(r=>r.addEventListener('change',()=>renderAges(Number(r.value))));
+
+  /* area other than Tel Aviv -> city field */
+  const cityWrap=document.getElementById('city-wrap');
+  form.querySelectorAll('[name="area"]').forEach(r=>r.addEventListener('change',()=>{const show=r.value!=='תל אביב';cityWrap.hidden=!show;if(show)document.getElementById('city').focus()}));
+
+  /* "other" chips -> free text */
+  [['draw-6','draw-other-wrap','draw-other'],['topics-6','topics-other-wrap','topics-other']].forEach(([c,w,i])=>{
+    const box=document.getElementById(c),wrap=document.getElementById(w);
+    box.addEventListener('change',()=>{wrap.hidden=!box.checked;if(box.checked)document.getElementById(i).focus()});
+  });
+
+  form.addEventListener('submit',async e=>{
+    e.preventDefault();
+    if(busy||!check(3))return;
+    const data={
+      age:val('age'), kidsCount:Number(val('kids'))||null,
+      kidsAges:[...document.querySelectorAll('#age-grid select')].map(s=>s.value===''?null:Number(s.value)),
+      area:val('area'), city:(val('area')&&val('area')!=='תל אביב')?document.getElementById('city').value.trim():'',
+      nights:val('nights'), talk:val('talk'), fit:Number(val('fit'))||null,
+      draw:vals('draw'), drawOther:document.getElementById('draw-6').checked?document.getElementById('draw-other').value.trim():'',
+      topics:vals('topics'), topicsOther:document.getElementById('topics-6').checked?document.getElementById('topics-other').value.trim():'',
+      when:val('when'), format:val('format'),
+      block:vals('block'),
+      optin:optin.checked,
+      name:optin.checked?document.getElementById('name').value.trim():'',
+      phone:optin.checked?document.getElementById('phone').value.replace(/\s/g,''):'',
+      source:(new URLSearchParams(location.search).get('src')||'direct'),
+      utm:Object.fromEntries([...new URLSearchParams(location.search)].filter(([k])=>k.startsWith('utm_')))
+    };
+    busy=true; send.disabled=true; send.firstChild.textContent='שולח… ';
+    try{
+      await submitResponse(data);
+      form.hidden=true; document.getElementById('legs').hidden=true;
+      doneText.textContent=data.optin
+        ? 'שמרתי לך מקום ברשימה המוקדמת. כשייפתחו מועדים, תקבל הודעה ראשון ל-'+data.phone+'.'
+        : 'התשובות שלך יעזרו לי לבנות את הערב הנכון. אם תרצה מקום ברשימה המוקדמת, אפשר לחזור לכאן בכל זמן.';
+      done.hidden=false; done.focus();
+    }catch(x){
+      const code=x&&x.code;
+      fail(code==='network' ? 'השליחה לא עברה. בדוק את החיבור לאינטרנט ונסה שוב.'
+        : code==='not_configured' ? 'הטופס עוד לא מחובר לשרת. (למפתח: מלא את config.js)'
+        : 'משהו השתבש בשליחה. נסה שוב בעוד דקה.');
+    }finally{busy=false;send.disabled=false;send.firstChild.textContent='שליחה ';}
+  });
+  show(0);
+})();
+</script>
+</body>
+</html>
