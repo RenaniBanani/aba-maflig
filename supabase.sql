@@ -5,7 +5,7 @@ create table if not exists public.responses (
   id            bigint generated always as identity primary key,
   created_at    timestamptz not null default now(),
   age           text check (char_length(age) <= 20),
-  kids_count    smallint check (kids_count between 1 and 6),
+  kids_count    smallint check (kids_count between 0 and 6),
   kids_ages     smallint[] check (cardinality(kids_ages) <= 6),
   area          text check (char_length(area) <= 30),
   city          text check (char_length(city) <= 60),

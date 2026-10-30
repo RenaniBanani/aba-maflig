@@ -279,6 +279,7 @@ input:focus-visible,textarea:focus-visible{outline:none;border-color:var(--blue)
         <div class="q">
           <div class="qt" id="q-kids">כמה ילדים יש לך?</div>
           <div class="opts" role="radiogroup" aria-labelledby="q-kids">
+            <label class="opt"><input type="radio" name="kids" id="kids-0" value="0"><span>אין לי ילדים</span></label>
             <label class="opt"><input type="radio" name="kids" id="kids-1" value="1"><span>1</span></label>
             <label class="opt"><input type="radio" name="kids" id="kids-2" value="2"><span>2</span></label>
             <label class="opt"><input type="radio" name="kids" id="kids-3" value="3"><span>3</span></label>
@@ -554,8 +555,20 @@ async function submitResponse(d){
       body:JSON.stringify(row)
     });
   }catch(e){throw {code:'network'}}
-  if(!res.ok){console.error('Supabase',res.status,await res.text().catch(()=>''));throw {code:'server'}}
+  if(!res.ok){
+    const txt=await res.text().catch(()=>'');
+    /* older table rule allowed 1-6 kids only: keep the answer, drop the count */
+    if(row.kids_count===0 && txt.includes('kids_count')){row.kids_count=null;row.kids_ages=[];return submitResponse.retry(cfg,row)}
+    console.error('Supabase',res.status,txt);throw {code:'server'}
+  }
 }
+submitResponse.retry=async function(cfg,row){
+  const res=await fetch(cfg.supabaseUrl.replace(/\/$/,'')+'/rest/v1/responses',{method:'POST',
+    headers:Object.assign({'Content-Type':'application/json',apikey:cfg.supabaseAnonKey,Prefer:'return=minimal'},
+      cfg.supabaseAnonKey.startsWith('eyJ')?{Authorization:'Bearer '+cfg.supabaseAnonKey}:{}),
+    body:JSON.stringify(row)});
+  if(!res.ok) throw {code:'server'};
+};
 
 (function(){
   const form=document.getElementById('form');
@@ -626,7 +639,7 @@ async function submitResponse(d){
     e.preventDefault();
     if(busy||!check(3))return;
     const data={
-      age:val('age'), kidsCount:Number(val('kids'))||null,
+      age:val('age'), kidsCount:val('kids')===''?null:Number(val('kids')),
       kidsAges:[...document.querySelectorAll('#age-grid select')].map(s=>s.value===''?null:Number(s.value)),
       area:val('area'), city:(val('area')&&val('area')!=='תל אביב')?document.getElementById('city').value.trim():'',
       nights:val('nights'), talk:val('talk'), fit:Number(val('fit'))||null,
