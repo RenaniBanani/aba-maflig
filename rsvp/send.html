@@ -72,7 +72,7 @@ summary{cursor:pointer;font-weight:700;font-size:15px;color:#2E5A96}
 <script>
 const $=id=>document.getElementById(id);
 const base=location.origin+location.pathname.replace(/send\.html$/,'');
-const tpl='היי {שם}, כאן רנן מאבא מפליג 🌊\nההפלגה הראשונה נקבעה: יום שני 16.11, 16:00–18:00, ממרינה תל אביב.\nיוצאים מוקדם בגלל שעון החורף, כדי לתפוס את השקיעה בים 🌅\nשמרתי לך מקום. אישור הגעה ותשלום כאן (עד 12.11):\n{קישור}';
+const tpl='היי {שם}, כאן רנן מאבא מפליג 🌊\nההפלגה הראשונה נקבעה: יום שני 16.11, 16:00–18:00, ממרינה תל אביב.\nבשעון חורף השמש שוקעת כבר בסביבות 16:40, אז יוצאים ב־16:00 כדי להיות בלב הים בדיוק בשקיעה 🌅\nשמרתי לך מקום. אישור הגעה ותשלום כאן (עד 12.11):\n{קישור}';
 $('msg').value=tpl;
 /* r = short fingerprint of the phone, so two dads with the same name are counted apart (the number itself is not in the link) */
 async function refOf(ph){ if(!ph||!crypto.subtle) return '';
