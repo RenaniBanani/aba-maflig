@@ -197,7 +197,7 @@ footer a{color:var(--blue-dk)}
     if(E.priceNote){ const t=document.createElement('small'); t.className='ptag'; t.textContent=E.priceNote; p.append(t); } }
   const terms=[];
   if(E.deadlineISO) terms.push(['אישור הגעה עד '+dm(E.deadlineISO),'']);
-  if(E.minSeats) terms.push(['ההפלגה יוצאת במינימום '+E.minSeats+' אבות.',' אם לא נגיע למינימום, הכסף יוחזר במלואו.']);
+  if(E.minSeats) terms.push(['ההפלגה יוצאת במינימום '+E.minSeats+' משתתפים.',' אם לא נגיע למינימום, הכסף יוחזר במלואו.']);
   if(E.refundISO) terms.push(['ביטול עם החזר מלא עד '+dm(E.refundISO)+'.','']);
   if(E.weatherNote) terms.push(['חשוב: ',E.weatherNote]);
   terms.forEach(([b,t])=>{const p=document.createElement('p');const x=document.createElement('b');x.textContent=b;p.append(x,t);$('terms').append(p)});
@@ -274,7 +274,7 @@ footer a{color:var(--blue-dk)}
       box.append(n);
       const p=document.createElement('p'); p.className='note'; p.textContent='פתח את '+app+', העבר '+(amount||'את הסכום')+' למספר, ובהערה כתוב "'+(name||'שם')+' · אבא מפליג".'; box.append(p);
     } else { const p=document.createElement('p'); p.className='note'; p.textContent='אשלח לך את המספר להעברה בוואטסאפ.'; box.append(p); }
-    if(E.refundISO){ const r=document.createElement('p'); r.className='note'; r.textContent='ביטול עם החזר מלא עד '+dm(E.refundISO)+'. אם לא נגיע ל־'+(E.minSeats||8)+' אבות, הכסף חוזר אליך.'; box.append(r); }
+    if(E.refundISO){ const r=document.createElement('p'); r.className='note'; r.textContent='ביטול עם החזר מלא עד '+dm(E.refundISO)+'. אם לא נגיע ל־'+(E.minSeats||8)+' משתתפים, הכסף חוזר אליך.'; box.append(r); }
     $('change-pay').textContent=m==='bit'?'מעדיף פייבוקס?':'מעדיף ביט?';
     $('change-pay').onclick=()=>renderPay(m==='bit'?'paybox':'bit');
   }
