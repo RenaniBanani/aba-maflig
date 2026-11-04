@@ -199,6 +199,7 @@ footer a{color:var(--blue-dk)}
   if(E.deadlineISO) terms.push(['אישור הגעה עד '+dm(E.deadlineISO),'']);
   if(E.minSeats) terms.push(['ההפלגה יוצאת במינימום '+E.minSeats+' אבות.',' אם לא נגיע למינימום, הכסף יוחזר במלואו.']);
   if(E.refundISO) terms.push(['ביטול עם החזר מלא עד '+dm(E.refundISO)+'.','']);
+  if(E.weatherNote) terms.push(['חשוב: ',E.weatherNote]);
   terms.forEach(([b,t])=>{const p=document.createElement('p');const x=document.createElement('b');x.textContent=b;p.append(x,t);$('terms').append(p)});
   $('terms').hidden=!terms.length;
   $('eid').textContent=(E.id||'').toUpperCase()+' · BOARDING PASS';
