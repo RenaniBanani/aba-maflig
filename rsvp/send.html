@@ -23,6 +23,17 @@ input:focus,textarea:focus{outline:none;border-color:var(--blue)}
 p{margin:0;color:var(--muted);font-size:15px}
 .preview{white-space:pre-wrap;font-weight:400;font-size:16px;background:#e7f8e1;border-radius:12px 12px 4px 12px;padding:12px 14px;word-break:break-word}
 .preview a{color:#2E5A96;direction:ltr;unicode-bidi:isolate}
+.file{display:flex;align-items:center;justify-content:center;min-height:50px;border:2px dashed var(--border);border-radius:12px;color:#2E5A96;cursor:pointer}
+.file input{display:none}
+.count{font-weight:700}
+.list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.list li{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center;padding:10px 12px;border:1.5px solid var(--border);border-radius:12px}
+.list li.sent{background:#f1f8f2;border-color:#cfe8d3}
+.list .who{font-weight:700;min-width:0}
+.list .tel{font-size:14px;color:var(--muted);direction:ltr;text-align:right}
+.list .go{grid-row:span 2;min-height:42px;padding:0 14px;font-size:15px}
+.list li.sent .go{background:#9aa3ad}
+.small{border:0;background:none;color:var(--muted);text-decoration:underline;font:15px "Heebo",sans-serif;cursor:pointer;justify-self:center}
 summary{cursor:pointer;font-weight:700;font-size:15px;color:#2E5A96}
 </style>
 </head>
@@ -44,6 +55,20 @@ summary{cursor:pointer;font-weight:700;font-size:15px;color:#2E5A96}
     <button class="btn alt" id="cp" type="button">העתקת הקישור</button>
   </div>
 </div>
+
+<div class="wrap" style="margin-top:16px">
+  <h1 style="font-size:24px">שליחה לכל הרשימה</h1>
+  <p>מייצאים מ־Supabase קובץ CSV עם שם וטלפון, וטוענים אותו כאן. הקובץ נקרא רק בדפדפן שלך ולא נשלח לשום מקום.</p>
+  <label class="file">טעינת קובץ CSV<input type="file" id="csv" accept=".csv,text/csv"></label>
+  <details><summary>או להדביק רשימה</summary>
+    <p style="margin:8px 0">שורה לכל נרשם: שם, טלפון</p>
+    <textarea id="paste" placeholder="אבי כהן, 050-1234567&#10;דני לוי, 052-7654321"></textarea>
+    <button class="btn alt" id="load" type="button" style="width:100%;margin-top:8px">טעינת הרשימה</button>
+  </details>
+  <div id="count" class="count" hidden></div>
+  <ol class="list" id="list"></ol>
+  <button class="small" id="reset" type="button" hidden>איפוס הסימונים "נשלח"</button>
+</div>
 <script>
 const $=id=>document.getElementById(id);
 const base=location.origin+location.pathname.replace(/send\.html$/,'');
@@ -53,6 +78,13 @@ $('msg').value=tpl;
 async function refOf(ph){ if(!ph||!crypto.subtle) return '';
   const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('aba:'+ph));
   return [...new Uint8Array(h)].slice(0,4).map(b=>b.toString(16).padStart(2,'0')).join(''); }
+async function build(n,phone){
+  const digits=(phone||'').replace(/\D/g,'').replace(/^972/,'0'); const r=await refOf(digits);
+  const q=new URLSearchParams(); if(n) q.set('n',n); if(r) q.set('r',r);
+  const url=base+(q.toString()?'?'+q:'');
+  const text=$('msg').value.replaceAll('{שם}',n||'').replace(/^היי ,/,'היי,').replaceAll('{קישור}',url);
+  return {url,text,wa:'https://wa.me/'+digits.replace(/^0/,'972')+'?text='+encodeURIComponent(text),digits};
+}
 async function upd(){
   const n=$('n').value.trim(); const r=await refOf($('p').value.replace(/\D/g,''));
   const q=new URLSearchParams(); if(n) q.set('n',n); if(r) q.set('r',r);
@@ -66,6 +98,53 @@ async function upd(){
 }
 ['n','p','msg'].forEach(i=>$(i).addEventListener('input',upd)); upd();
 $('cp').onclick=async e=>{try{await navigator.clipboard.writeText($('cp').dataset.url);e.target.textContent='הועתק ✓'}catch(_){}};
+
+/* ---- list mode ---- */
+const store={get(){try{return JSON.parse(localStorage.getItem('aba-sent')||'{}')}catch(_){return {}}},
+  set(v){try{localStorage.setItem('aba-sent',JSON.stringify(v))}catch(_){}}};
+let sent=store.get(), people=[];
+function parseCSV(t){
+  const rows=[];let row=[],f='',q=false;
+  for(let i=0;i<t.length;i++){const c=t[i];
+    if(q){ if(c=='"'){ if(t[i+1]=='"'){f+='"';i++} else q=false } else f+=c; }
+    else if(c=='"') q=true; else if(c==','||c=='\t'){row.push(f);f=''} else if(c=='\n'||c=='\r'){ if(c=='\r'&&t[i+1]=='\n')i++; row.push(f);rows.push(row);row=[];f=''} else f+=c; }
+  if(f||row.length){row.push(f);rows.push(row)}
+  return rows.map(r=>r.map(x=>x.trim())).filter(r=>r.some(Boolean));
+}
+function toPeople(rows){
+  if(!rows.length) return [];
+  const h=rows[0].map(x=>x.toLowerCase());
+  let ni=h.findIndex(x=>/^(name|שם)/.test(x)), pi=h.findIndex(x=>/(phone|טלפון|נייד)/.test(x));
+  let data=rows;
+  if(ni>=0&&pi>=0) data=rows.slice(1);
+  else { /* no header: guess the phone column by digits */
+    pi=rows[0].findIndex(x=>x.replace(/\D/g,'').length>=9); ni=pi===0?1:0; }
+  const seen=new Set();
+  return data.map(r=>({name:(r[ni]||'').trim(),phone:(r[pi]||'').trim()}))
+    .filter(p=>p.phone.replace(/\D/g,'').length>=9)
+    .filter(p=>{const k=p.phone.replace(/\D/g,'');if(seen.has(k))return false;seen.add(k);return true});
+}
+const first=n=>(n||'').split(/\s+/)[0];
+async function render(){
+  const ol=$('list'); ol.innerHTML='';
+  for(const p of people){
+    const m=await build(first(p.name),p.phone);
+    const li=document.createElement('li'); if(sent[m.digits]) li.className='sent';
+    li.innerHTML='<span class="who"></span><a class="btn go" target="_blank" rel="noopener"></a><span class="tel"></span>';
+    li.querySelector('.who').textContent=p.name||'(בלי שם)';
+    li.querySelector('.tel').textContent=p.phone;
+    const a=li.querySelector('.go'); a.href=m.wa; a.textContent=sent[m.digits]?'נשלח ✓':'וואטסאפ';
+    a.onclick=()=>{ sent[m.digits]=Date.now(); store.set(sent); li.className='sent'; a.textContent='נשלח ✓'; count(); };
+    ol.append(li);
+  }
+  count(); $('reset').hidden=!people.length;
+}
+function count(){ const n=people.filter(p=>sent[p.phone.replace(/\D/g,'').replace(/^972/,'0')]).length;
+  $('count').hidden=!people.length; $('count').textContent=people.length+' נרשמים · נשלח ל־'+n; }
+$('csv').onchange=async e=>{ const f=e.target.files[0]; if(!f) return; people=toPeople(parseCSV(await f.text())); render(); };
+$('load').onclick=()=>{ people=toPeople(parseCSV($('paste').value)); render(); };
+$('reset').onclick=()=>{ sent={}; store.set(sent); render(); };
+$('msg').addEventListener('input',()=>{ if(people.length) render(); });
 </script>
 </body>
 </html>
