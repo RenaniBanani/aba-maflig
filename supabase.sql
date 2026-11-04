@@ -54,3 +54,31 @@ with (security_invoker = true) as
          count(*) filter (where optin) as early_signups
   from public.responses;
 revoke all on public.summary from anon, authenticated;
+
+-- ===================================================================
+-- אישורי הגעה (עמוד /rsvp). להדביק ב-SQL Editor → Run, פעם אחת.
+create table if not exists public.rsvp (
+  id            bigint generated always as identity primary key,
+  created_at    timestamptz not null default now(),
+  event_id      text not null check (char_length(event_id) <= 40),
+  name          text check (char_length(name) <= 60),
+  ref           text check (char_length(ref) <= 40),
+  status        text not null check (status in ('yes','no')),
+  pay_method    text check (pay_method in ('bit','paybox')),
+  reason        text check (char_length(reason) <= 30),
+  reason_other  text check (char_length(reason_other) <= 200),
+  next_time     boolean,
+  user_agent    text check (char_length(user_agent) <= 300)
+);
+alter table public.rsvp enable row level security;
+drop policy if exists "anon can insert" on public.rsvp;
+create policy "anon can insert" on public.rsvp for insert to anon with check (true);
+revoke all on public.rsvp from anon;
+grant insert on public.rsvp to anon;
+
+-- התשובה האחרונה של כל אחד (אם מישהו שינה דעה – רואים רק את האחרונה)
+create or replace view public.rsvp_latest
+with (security_invoker = true) as
+  select distinct on (event_id, coalesce(ref, name)) *
+  from public.rsvp order by event_id, coalesce(ref, name), created_at desc;
+revoke all on public.rsvp_latest from anon, authenticated;

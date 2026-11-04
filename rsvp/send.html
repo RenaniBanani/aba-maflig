@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>שליחת הזמנות · אבא מפליג</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap">
+<style>
+:root{--blue:#347DDB;--ink:#0E1116;--paper:#F7F7FF;--border:#e5e7eb;--muted:#6b7280;--green:#2E973E}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.55 "Heebo",system-ui,sans-serif;padding:28px 16px}
+.wrap{max-width:520px;margin:0 auto;background:#fff;border:1px solid var(--border);border-radius:24px;padding:24px;display:grid;gap:14px}
+h1{margin:0;font-weight:900;font-size:28px}
+label{display:grid;gap:4px;font-weight:700;font-size:15px}
+input,textarea{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:12px;font:16px "Heebo",sans-serif}
+textarea{min-height:150px;resize:vertical}
+input:focus,textarea:focus{outline:none;border-color:var(--blue)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{display:flex;align-items:center;justify-content:center;min-height:50px;border-radius:12px;border:0;font:700 17px "Heebo",sans-serif;cursor:pointer;text-decoration:none;color:#fff;background:var(--green)}
+.btn.alt{background:var(--ink)}
+.link{font-size:14px;color:var(--muted);word-break:break-all;direction:ltr;text-align:left}
+p{margin:0;color:var(--muted);font-size:15px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>שליחת הזמנה אישית</h1>
+  <p>כותבים שם וטלפון של נרשם, ונפתח וואטסאפ עם הודעה וקישור אישי. לא נשמר כלום בדף הזה.</p>
+  <div class="row">
+    <label>שם פרטי<input id="n" autocomplete="off" placeholder="אבי"></label>
+    <label>טלפון<input id="p" inputmode="tel" autocomplete="off" placeholder="050-0000000"></label>
+  </div>
+  <label>ההודעה<textarea id="msg"></textarea></label>
+  <div class="link" id="link"></div>
+  <div class="row">
+    <a class="btn" id="wa" target="_blank" rel="noopener">פתיחה בוואטסאפ</a>
+    <button class="btn alt" id="cp" type="button">העתקת הקישור</button>
+  </div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const base=location.origin+location.pathname.replace(/send\.html$/,'');
+const tpl='היי {שם}, כאן רנן מאבא מפליג 🌊\nנרשמת להפלגה הראשונה, ושמרתי לך מקום.\nכל הפרטים, אישור הגעה ותשלום כאן:\n{קישור}';
+$('msg').value=tpl;
+function upd(){
+  const n=$('n').value.trim(); const url=base+(n?'?n='+encodeURIComponent(n):'');
+  $('link').textContent=url;
+  const text=$('msg').value.replaceAll('{שם}',n||'').replace(/^היי ,/,'היי,').replaceAll('{קישור}',url);
+  const ph=$('p').value.replace(/\D/g,'').replace(/^0/,'972');
+  $('wa').href='https://wa.me/'+(ph||'')+'?text='+encodeURIComponent(text);
+}
+['n','p','msg'].forEach(i=>$(i).addEventListener('input',upd)); upd();
+$('cp').onclick=async e=>{try{await navigator.clipboard.writeText($('link').textContent);e.target.textContent='הועתק ✓'}catch(_){}};
+</script>
+</body>
+</html>
