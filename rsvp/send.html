@@ -21,6 +21,9 @@ input:focus,textarea:focus{outline:none;border-color:var(--blue)}
 .btn.alt{background:var(--ink)}
 .link{font-size:14px;color:var(--muted);word-break:break-all;direction:ltr;text-align:left}
 p{margin:0;color:var(--muted);font-size:15px}
+.preview{white-space:pre-wrap;font-weight:400;font-size:16px;background:#e7f8e1;border-radius:12px 12px 4px 12px;padding:12px 14px;word-break:break-word}
+.preview a{color:#2E5A96;direction:ltr;unicode-bidi:isolate}
+summary{cursor:pointer;font-weight:700;font-size:15px;color:#2E5A96}
 </style>
 </head>
 <body>
@@ -31,8 +34,11 @@ p{margin:0;color:var(--muted);font-size:15px}
     <label>שם פרטי<input id="n" autocomplete="off" placeholder="אבי"></label>
     <label>טלפון<input id="p" inputmode="tel" autocomplete="off" placeholder="050-0000000"></label>
   </div>
-  <label>ההודעה<textarea id="msg"></textarea></label>
-  <div class="link" id="link"></div>
+  <label>כך תיראה ההודעה<div class="preview" id="preview"></div></label>
+  <details><summary>עריכת הנוסח</summary>
+    <p style="margin:8px 0">{שם} ו־{קישור} מתמלאים לבד.</p>
+    <textarea id="msg"></textarea>
+  </details>
   <div class="row">
     <a class="btn" id="wa" target="_blank" rel="noopener">פתיחה בוואטסאפ</a>
     <button class="btn alt" id="cp" type="button">העתקת הקישור</button>
@@ -51,13 +57,15 @@ async function upd(){
   const n=$('n').value.trim(); const r=await refOf($('p').value.replace(/\D/g,''));
   const q=new URLSearchParams(); if(n) q.set('n',n); if(r) q.set('r',r);
   const url=base+(q.toString()?'?'+q:'');
-  $('link').textContent=url;
+  $('cp').dataset.url=url;
   const text=$('msg').value.replaceAll('{שם}',n||'').replace(/^היי ,/,'היי,').replaceAll('{קישור}',url);
+  const pv=$('preview'); pv.textContent='';
+  text.split(url).forEach((part,i,a)=>{ pv.append(part); if(i<a.length-1){ const l=document.createElement('a'); l.href=url; l.target='_blank'; l.textContent=url; pv.append(l); } });
   const ph=$('p').value.replace(/\D/g,'').replace(/^0/,'972');
   $('wa').href='https://wa.me/'+(ph||'')+'?text='+encodeURIComponent(text);
 }
 ['n','p','msg'].forEach(i=>$(i).addEventListener('input',upd)); upd();
-$('cp').onclick=async e=>{try{await navigator.clipboard.writeText($('link').textContent);e.target.textContent='הועתק ✓'}catch(_){}};
+$('cp').onclick=async e=>{try{await navigator.clipboard.writeText($('cp').dataset.url);e.target.textContent='הועתק ✓'}catch(_){}};
 </script>
 </body>
 </html>
