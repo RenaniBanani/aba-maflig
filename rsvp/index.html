@@ -52,6 +52,7 @@ body{font-family:var(--font);font-size:17px;line-height:1.55;direction:rtl;min-h
 .grid dd.mono{font-family:var(--mono);font-weight:500;font-size:17px;direction:ltr;text-align:right}
 .grid .wide{grid-column:1/-1}
 .price dd{font-size:26px;font-weight:900}
+.price .ptag{display:block;font-size:13px;font-weight:700;color:var(--green);margin-top:2px}
 .price dd span{font-size:14px;font-weight:500;color:var(--muted);margin-inline-start:4px}
 
 h2{font-size:20px;font-weight:900;margin:0 0 10px;letter-spacing:-.01em}
@@ -73,6 +74,10 @@ h2{font-size:20px;font-weight:900;margin:0 0 10px;letter-spacing:-.01em}
 .opt small{display:block;color:var(--muted);font-weight:400;font-size:13.5px}
 textarea{width:100%;min-height:76px;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--r-md);font:400 16px var(--font);resize:vertical}
 textarea:focus{outline:none;border-color:var(--blue)}
+.seats{margin:0;justify-self:start;font-weight:700;font-size:15px;padding:6px 12px;border-radius:999px;background:var(--yellow);color:var(--ink)}
+.seats.out{background:var(--ink);color:var(--paper)}
+.terms{display:grid;gap:6px;background:var(--paper);border-radius:var(--r-md);padding:14px 16px;font-size:15px}
+.terms p{margin:0}.terms b{font-weight:700}
 .err{color:var(--danger);font-size:15px;font-weight:500;margin:0}
 
 /* done states */
@@ -104,10 +109,11 @@ footer a{color:var(--blue-dk)}
       <div><dt>תאריך</dt><dd id="d-date">—</dd></div>
       <div><dt>שעות</dt><dd class="mono" id="d-time">—</dd></div>
       <div class="wide"><dt>יציאה מ</dt><dd id="d-marina">—</dd></div>
-      <div><dt>על הסיפון</dt><dd>אבות בלבד + מעגל מונחה</dd></div>
+      <div><dt>על הסיפון</dt><dd>אבות</dd></div>
       <div class="price"><dt>עלות</dt><dd id="d-price">—</dd></div>
     </dl>
-    <p class="note" id="d-deadline" hidden></p>
+    <p class="seats" id="seats" hidden></p>
+    <div class="terms" id="terms"></div>
 
     <section aria-labelledby="q1">
       <h2 id="q1">מגיע?</h2>
@@ -146,8 +152,8 @@ footer a{color:var(--blue-dk)}
   <div class="body" id="done-yes" hidden>
     <div class="done">
       <div class="check"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></div>
-      <h2 style="font-size:26px">רשמתי אותך. נתראה על המזח.</h2>
-      <p class="note">המקום נשמר סופית אחרי התשלום.</p>
+      <h2 style="font-size:28px" id="yes-title">יאללה, יוצאים להפליג.</h2>
+      <p class="note" id="yes-text">נתראה על הרציף. המקום שלך נשמר סופית אחרי התשלום.</p>
       <div class="pay" id="pay-box"></div>
       <button class="small-link" id="change-pay" type="button">רוצה לשלם בדרך אחרת?</button>
     </div>
@@ -155,7 +161,7 @@ footer a{color:var(--blue-dk)}
 
   <div class="body" id="done-no" hidden>
     <div class="done">
-      <h2 style="font-size:26px">תודה שעדכנת.</h2>
+      <h2 style="font-size:26px" id="no-title">תודה שעדכנת.</h2>
       <p class="note" id="no-text">אני לוקח את זה בחשבון כשאקבע את ההפלגה הבאה.</p>
       <button class="small-link" id="undo" type="button">התחרטתי, אני כן רוצה להגיע</button>
     </div>
@@ -173,6 +179,12 @@ footer a{color:var(--blue-dk)}
   const $=id=>document.getElementById(id);
   const fmtPhone=p=>(p||'').replace(/\D/g,'').replace(/^(\d{3})(\d{3})(\d{4})$/,'$1-$2-$3');
 
+  const api=(path,body)=>fetch(cfg.supabaseUrl.replace(/\/$/,'')+'/rest/v1/'+path,{method:'POST',
+    headers:Object.assign({'Content-Type':'application/json',apikey:cfg.supabaseAnonKey,Prefer:'return=minimal'},
+      (cfg.supabaseAnonKey||'').startsWith('eyJ')?{Authorization:'Bearer '+cfg.supabaseAnonKey}:{}),
+    body:JSON.stringify(body)});
+  const dm=iso=>{const d=new Date(iso+'T12:00:00');return d.getDate()+'.'+(d.getMonth()+1)};
+
   /* ---- fill the card ---- */
   if(name){ const h=$('hello'); h.textContent=''; h.append(name+', שמרתי לך ');
     const m=document.createElement('mark'); m.textContent='מקום על הסיפון'; h.append(m); document.title=name+' · אישור הגעה · אבא מפליג'; }
@@ -181,43 +193,61 @@ footer a{color:var(--blue-dk)}
   $('d-time').textContent=[E.gather,E.back].filter(Boolean).join('–')||'—';
   $('d-marina').textContent=[E.marina,E.boat].filter(Boolean).join(' · ')||'—';
   if(E.price){ const p=$('d-price'); p.textContent='₪'+Number(E.price).toLocaleString('he-IL');
-    const s=document.createElement('span'); s.textContent='לאב'; p.append(s); }
-  if(E.deadline){ $('d-deadline').textContent='אישור הגעה '+E.deadline+'. המקומות מוגבלים.'; $('d-deadline').hidden=false; }
+    const s=document.createElement('span'); s.textContent='לאב'; p.append(s);
+    if(E.priceNote){ const t=document.createElement('small'); t.className='ptag'; t.textContent=E.priceNote; p.append(t); } }
+  const terms=[];
+  if(E.deadlineISO) terms.push(['אישור הגעה עד '+dm(E.deadlineISO),'']);
+  if(E.minSeats) terms.push(['ההפלגה יוצאת במינימום '+E.minSeats+' אבות.',' אם לא נגיע למינימום, הכסף יוחזר במלואו.']);
+  if(E.refundISO) terms.push(['ביטול עם החזר מלא עד '+dm(E.refundISO)+'.','']);
+  terms.forEach(([b,t])=>{const p=document.createElement('p');const x=document.createElement('b');x.textContent=b;p.append(x,t);$('terms').append(p)});
+  $('terms').hidden=!terms.length;
   $('eid').textContent=(E.id||'').toUpperCase()+' · BOARDING PASS';
   if(E.contactPhone){ const a=document.createElement('a'); a.href='https://wa.me/972'+E.contactPhone.replace(/\D/g,'').replace(/^0/,'');
     a.textContent='כתבו לי בוואטסאפ'; $('foot').textContent='שאלות? '; $('foot').append(a); }
 
-  /* payment options: only the ones configured */
-  const methods=[];
-  if(E.bitPhone) methods.push({v:'bit',t:'ביט',s:'העברה למספר '+fmtPhone(E.bitPhone)});
-  if(E.payboxUrl) methods.push({v:'paybox',t:'פייבוקס',s:'דרך קישור לקבוצה'});
-  if(!methods.length) methods.push({v:'bit',t:'ביט',s:'אשלח לך את המספר'},{v:'paybox',t:'פייבוקס',s:'אשלח לך קישור'});
-  methods.forEach((m,i)=>{ const l=document.createElement('label'); l.className='opt';
+  /* registration closed after the deadline day */
+  const closed=E.deadlineISO && new Date()>new Date(E.deadlineISO+'T23:59:59');
+
+  /* ---- seats: count of confirmed dads (server function, returns a number only) ---- */
+  let full=false;
+  function showSeats(taken){
+    const max=E.maxSeats||12, left=Math.max(0,max-taken), el=$('seats');
+    el.className='seats'; el.hidden=false;
+    if(left<=0){ full=true; el.textContent='ההפלגה מלאה'; el.classList.add('out');
+      $('b-yes').lastChild.textContent=' הכנס אותי לרשימת המתנה'; }
+    else if(left<=4) el.textContent=left===1?'נשאר מקום אחרון':'נשארו '+left+' מקומות';
+    else if(left<=6) el.textContent='מקומות אחרונים';
+    else el.hidden=true;
+  }
+  if(closed){ $('seats').hidden=false; $('seats').className='seats out'; $('seats').textContent='ההרשמה להפלגה הזאת נסגרה'; }
+  else api('rpc/rsvp_taken',{p_event:E.id}).then(r=>r.ok?r.json():null).then(n=>{ if(typeof n==='number') showSeats(n+(E.extraSeats||0)); }).catch(()=>{});
+
+  /* payment: transfer to a phone number in Bit or PayBox */
+  const ph=E.payPhone?fmtPhone(E.payPhone):'';
+  [['bit','ביט'],['paybox','פייבוקס']].forEach(([v,t],i)=>{ const l=document.createElement('label'); l.className='opt';
     l.innerHTML='<input type="radio" name="pay"><span><b></b><small></small></span>';
-    const inp=l.querySelector('input'); inp.value=m.v; if(i===0) inp.checked=true;
-    l.querySelector('b').textContent=m.t; l.querySelector('small').textContent=m.s; $('pay-opts').append(l); });
+    const inp=l.querySelector('input'); inp.value=v; if(i===0) inp.checked=true;
+    l.querySelector('b').textContent=t; l.querySelector('small').textContent=ph?'העברה למספר '+ph:'העברה למספר טלפון'; $('pay-opts').append(l); });
 
   /* ---- choose yes / no ---- */
   let status=null;
   function choose(s){ status=s; $('b-yes').setAttribute('aria-pressed',s==='yes'); $('b-no').setAttribute('aria-pressed',s==='no');
-    $('s-yes').hidden=s!=='yes'; $('s-no').hidden=s!=='no'; $('send').hidden=false; $('err').hidden=true;
-    $('send').textContent=s==='yes'?'אישור הגעה ומעבר לתשלום':'שליחה'; }
+    $('s-yes').hidden=!(s==='yes'&&!full); $('s-no').hidden=s!=='no'; $('send').hidden=false; $('err').hidden=true;
+    $('send').textContent=s==='yes'?(full?'הכניסו אותי לרשימה':'אישור הגעה ומעבר לתשלום'):'שליחה'; }
   $('b-yes').onclick=()=>choose('yes'); $('b-no').onclick=()=>choose('no');
+  if(closed){ $('b-yes').disabled=true; $('b-no').disabled=true; }
 
-  /* ---- save (insert-only table "rsvp") ---- */
   async function save(row){
     if(!cfg.supabaseUrl||!cfg.supabaseAnonKey) throw new Error('config');
-    const res=await fetch(cfg.supabaseUrl.replace(/\/$/,'')+'/rest/v1/rsvp',{method:'POST',
-      headers:Object.assign({'Content-Type':'application/json',apikey:cfg.supabaseAnonKey,Prefer:'return=minimal'},
-        cfg.supabaseAnonKey.startsWith('eyJ')?{Authorization:'Bearer '+cfg.supabaseAnonKey}:{}),
-      body:JSON.stringify(Object.assign({event_id:E.id||'event',name:name||null,ref,user_agent:navigator.userAgent.slice(0,300)},row))});
+    const res=await api('rsvp',Object.assign({event_id:E.id||'event',name:name||null,ref,user_agent:navigator.userAgent.slice(0,300)},row));
     if(!res.ok){ console.error('Supabase',res.status,await res.text().catch(()=>'')); throw new Error('server'); }
   }
   function showErr(t){ $('err').textContent=t; $('err').hidden=false; }
 
   $('send').onclick=async()=>{
     let row;
-    if(status==='yes'){ const p=document.querySelector('input[name=pay]:checked'); row={status:'yes',pay_method:p?p.value:null}; }
+    if(status==='yes'&&full) row={status:'wait'};
+    else if(status==='yes'){ const p=document.querySelector('input[name=pay]:checked'); row={status:'yes',pay_method:p?p.value:null}; }
     else { const r=document.querySelector('input[name=reason]:checked');
       if(!r) return showErr('בחר סיבה אחת, זה ייקח שנייה.');
       row={status:'no',reason:r.value,reason_other:$('reason-other').value.trim()||null,next_time:$('next-time').checked}; }
@@ -226,6 +256,7 @@ footer a{color:var(--blue-dk)}
     catch(e){ b.disabled=false; choose(status); return showErr('משהו לא עבר. בדוק חיבור ונסה שוב.'); }
     b.disabled=false; $('main').hidden=true;
     if(row.status==='yes'){ renderPay(row.pay_method); $('done-yes').hidden=false; }
+    else if(row.status==='wait'){ $('no-title').textContent='אתה ברשימת ההמתנה.'; $('no-text').textContent='אם יתפנה מקום, אני שולח לך הודעה ראשון.'; $('undo').hidden=true; $('done-no').hidden=false; }
     else { if(row.reason==='date'&&row.next_time) $('no-text').textContent='אעדכן אותך כשיהיה מועד נוסף.';
       $('done-no').hidden=false; }
     scrollTo({top:0,behavior:'smooth'});
@@ -233,25 +264,18 @@ footer a{color:var(--blue-dk)}
 
   function renderPay(m){
     const box=$('pay-box'); box.innerHTML='';
-    const amount=E.price?'₪'+E.price:'';
-    const h=document.createElement('b'); box.append(h);
-    if(m==='bit'&&E.bitPhone){
-      h.textContent='תשלום בביט'+(amount?' · '+amount:'');
+    const app=m==='paybox'?'פייבוקס':'ביט', amount=E.price?'₪'+E.price:'';
+    const h=document.createElement('b'); h.textContent='העברה ב'+app+(amount?' · '+amount:''); box.append(h);
+    if(ph){
       const n=document.createElement('div'); n.className='num'; n.innerHTML='<span></span><button class="copy" type="button">העתקה</button>';
-      n.querySelector('span').textContent=fmtPhone(E.bitPhone);
-      n.querySelector('button').onclick=async e=>{ try{await navigator.clipboard.writeText(E.bitPhone.replace(/\D/g,'')); e.target.textContent='הועתק ✓';}catch(_){ e.target.textContent='העתק ידנית'; } };
+      n.querySelector('span').textContent=ph;
+      n.querySelector('button').onclick=async e=>{ try{await navigator.clipboard.writeText(E.payPhone.replace(/\D/g,'')); e.target.textContent='הועתק ✓';}catch(_){ e.target.textContent='העתק ידנית'; } };
       box.append(n);
-      const p=document.createElement('p'); p.className='note'; p.textContent='פתח את ביט, הדבק את המספר, ובהערה כתוב "'+(name||'שם')+' · אבא מפליג".'; box.append(p);
-    } else if(m==='paybox'&&E.payboxUrl){
-      h.textContent='תשלום בפייבוקס'+(amount?' · '+amount:'');
-      const a=document.createElement('a'); a.className='btn primary'; a.href=E.payboxUrl; a.target='_blank'; a.rel='noopener'; a.textContent='לתשלום בפייבוקס'; box.append(a);
-    } else {
-      h.textContent='פרטי תשלום'; const p=document.createElement('p'); p.className='note';
-      p.textContent='אשלח לך את פרטי התשלום ב'+(m==='paybox'?'פייבוקס':'ביט')+' בוואטסאפ בקרוב.'; box.append(p);
-    }
-    const others=methods.filter(x=>x.v!==m&&((x.v==='bit'&&E.bitPhone)||(x.v==='paybox'&&E.payboxUrl)));
-    $('change-pay').hidden=!others.length;
-    $('change-pay').onclick=()=>renderPay(others[0].v);
+      const p=document.createElement('p'); p.className='note'; p.textContent='פתח את '+app+', העבר '+(amount||'את הסכום')+' למספר, ובהערה כתוב "'+(name||'שם')+' · אבא מפליג".'; box.append(p);
+    } else { const p=document.createElement('p'); p.className='note'; p.textContent='אשלח לך את המספר להעברה בוואטסאפ.'; box.append(p); }
+    if(E.refundISO){ const r=document.createElement('p'); r.className='note'; r.textContent='ביטול עם החזר מלא עד '+dm(E.refundISO)+'. אם לא נגיע ל־'+(E.minSeats||8)+' אבות, הכסף חוזר אליך.'; box.append(r); }
+    $('change-pay').textContent=m==='bit'?'מעדיף פייבוקס?':'מעדיף ביט?';
+    $('change-pay').onclick=()=>renderPay(m==='bit'?'paybox':'bit');
   }
 
   $('undo').onclick=()=>{ $('done-no').hidden=true; $('main').hidden=false; choose('yes'); };

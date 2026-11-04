@@ -56,20 +56,24 @@ with (security_invoker = true) as
 revoke all on public.summary from anon, authenticated;
 
 -- ===================================================================
--- אישורי הגעה (עמוד /rsvp). להדביק ב-SQL Editor → Run, פעם אחת.
+-- אישורי הגעה (עמוד /rsvp). להדביק ב-SQL Editor → Run. אפשר להריץ שוב בלי נזק.
 create table if not exists public.rsvp (
   id            bigint generated always as identity primary key,
   created_at    timestamptz not null default now(),
   event_id      text not null check (char_length(event_id) <= 40),
   name          text check (char_length(name) <= 60),
   ref           text check (char_length(ref) <= 40),
-  status        text not null check (status in ('yes','no')),
+  status        text not null,
   pay_method    text check (pay_method in ('bit','paybox')),
   reason        text check (char_length(reason) <= 30),
   reason_other  text check (char_length(reason_other) <= 200),
   next_time     boolean,
   user_agent    text check (char_length(user_agent) <= 300)
 );
+-- yes = מגיע, no = לא מגיע, wait = רשימת המתנה (כשההפלגה מלאה)
+alter table public.rsvp drop constraint if exists rsvp_status_check;
+alter table public.rsvp add constraint rsvp_status_check check (status in ('yes','no','wait'));
+
 alter table public.rsvp enable row level security;
 drop policy if exists "anon can insert" on public.rsvp;
 create policy "anon can insert" on public.rsvp for insert to anon with check (true);
@@ -82,3 +86,15 @@ with (security_invoker = true) as
   select distinct on (event_id, coalesce(ref, name)) *
   from public.rsvp order by event_id, coalesce(ref, name), created_at desc;
 revoke all on public.rsvp_latest from anon, authenticated;
+
+-- כמה אבות אישרו הגעה. מחזיר מספר בלבד – בלי שמות – כדי שהעמוד יציג "נשארו X מקומות"
+create or replace function public.rsvp_taken(p_event text)
+returns integer language sql stable security definer set search_path = public as $$
+  select count(*)::int from (
+    select distinct on (coalesce(ref, name)) status
+    from public.rsvp where event_id = p_event
+    order by coalesce(ref, name), created_at desc
+  ) t where status = 'yes';
+$$;
+revoke all on function public.rsvp_taken(text) from public;
+grant execute on function public.rsvp_taken(text) to anon;

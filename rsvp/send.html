@@ -41,10 +41,16 @@ p{margin:0;color:var(--muted);font-size:15px}
 <script>
 const $=id=>document.getElementById(id);
 const base=location.origin+location.pathname.replace(/send\.html$/,'');
-const tpl='היי {שם}, כאן רנן מאבא מפליג 🌊\nנרשמת להפלגה הראשונה, ושמרתי לך מקום.\nכל הפרטים, אישור הגעה ותשלום כאן:\n{קישור}';
+const tpl='היי {שם}, כאן רנן מאבא מפליג 🌊\nההפלגה הראשונה נקבעה: יום שני 16.11, 16:00–18:00, ממרינה תל אביב.\nשמרתי לך מקום. אישור הגעה ותשלום כאן (עד 12.11):\n{קישור}';
 $('msg').value=tpl;
-function upd(){
-  const n=$('n').value.trim(); const url=base+(n?'?n='+encodeURIComponent(n):'');
+/* r = short fingerprint of the phone, so two dads with the same name are counted apart (the number itself is not in the link) */
+async function refOf(ph){ if(!ph||!crypto.subtle) return '';
+  const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('aba:'+ph));
+  return [...new Uint8Array(h)].slice(0,4).map(b=>b.toString(16).padStart(2,'0')).join(''); }
+async function upd(){
+  const n=$('n').value.trim(); const r=await refOf($('p').value.replace(/\D/g,''));
+  const q=new URLSearchParams(); if(n) q.set('n',n); if(r) q.set('r',r);
+  const url=base+(q.toString()?'?'+q:'');
   $('link').textContent=url;
   const text=$('msg').value.replaceAll('{שם}',n||'').replace(/^היי ,/,'היי,').replaceAll('{קישור}',url);
   const ph=$('p').value.replace(/\D/g,'').replace(/^0/,'972');
