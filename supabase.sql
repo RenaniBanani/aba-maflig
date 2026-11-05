@@ -98,3 +98,29 @@ returns integer language sql stable security definer set search_path = public as
 $$;
 revoke all on function public.rsvp_taken(text) from public;
 grant execute on function public.rsvp_taken(text) to anon;
+
+-- ===================================================================
+-- קישורים קצרים (aba-maflig.banani.co.il/rsvp/?k7m2qx). להדביק ב-SQL Editor → Run.
+create table if not exists public.invites (
+  code        text primary key check (code ~ '^[a-z0-9]{4,12}$'),
+  name        text check (char_length(name) <= 40),
+  created_at  timestamptz not null default now()
+);
+alter table public.invites enable row level security;
+revoke all on public.invites from anon, authenticated;
+
+-- כלי השליחה שומר שם פרטי ליד הקוד
+create or replace function public.make_invite(p_code text, p_name text)
+returns void language sql security definer set search_path = public as $$
+  insert into public.invites(code, name) values (p_code, nullif(left(trim(p_name), 40), ''))
+  on conflict (code) do update set name = excluded.name;
+$$;
+-- הכרטיס מקבל רק את השם הפרטי של קוד שהוא כבר מכיר
+create or replace function public.invite_name(p_code text)
+returns text language sql stable security definer set search_path = public as $$
+  select name from public.invites where code = p_code;
+$$;
+revoke all on function public.make_invite(text, text) from public;
+revoke all on function public.invite_name(text) from public;
+grant execute on function public.make_invite(text, text) to anon;
+grant execute on function public.invite_name(text) to anon;

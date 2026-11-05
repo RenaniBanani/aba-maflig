@@ -180,8 +180,11 @@ footer a{color:var(--blue-dk)}
 (function(){
   const E=window.ABA_EVENT||{}, cfg=window.ABA_CONFIG||{};
   const qs=new URLSearchParams(location.search);
-  const name=(qs.get('n')||'').trim().slice(0,40);
-  const ref=(qs.get('r')||'').trim().slice(0,40)||null;
+  /* short link "?k7m2qx" (name looked up in Supabase) or long link "?n=name&r=code" */
+  const raw=location.search.slice(1);
+  const code=/^[a-z0-9]{4,12}$/.test(raw)?raw:null;
+  let name=(qs.get('n')||'').trim().slice(0,40);
+  const ref=code||(qs.get('r')||'').trim().slice(0,40)||null;
   const $=id=>document.getElementById(id);
   const fmtPhone=p=>(p||'').replace(/\D/g,'').replace(/^(\d{3})(\d{3})(\d{4})$/,'$1-$2-$3');
 
@@ -192,8 +195,11 @@ footer a{color:var(--blue-dk)}
   const dm=iso=>{const d=new Date(iso+'T12:00:00');return d.getDate()+'.'+(d.getMonth()+1)};
 
   /* ---- fill the card ---- */
-  if(name){ const h=$('hello'); h.textContent=''; h.append(name+', שמרתי לך ');
+  function hello(){ if(!name) return; const h=$('hello'); h.textContent=''; h.append(name+', שמרתי לך ');
     const m=document.createElement('mark'); m.textContent='מקום על הסיפון'; h.append(m); document.title=name+' · אישור הגעה · אבא מפליג'; }
+  hello();
+  if(code) api('rpc/invite_name',{p_code:code}).then(r=>r.ok?r.json():null)
+    .then(n=>{ if(typeof n==='string'&&n){ name=n.slice(0,40); hello(); } }).catch(()=>{});
   if(E.dateISO){ const d=new Date(E.dateISO+'T12:00:00');
     $('d-date').textContent=d.toLocaleDateString('he-IL',{weekday:'long',day:'numeric',month:'numeric'}); }
   $('d-time').textContent=[E.gather,E.back].filter(Boolean).join('–')||'—';
